@@ -1,0 +1,50 @@
+version: '3.1'
+services:
+  mariadb:
+    image: mariadb
+    container_name: nodevader-mariadb
+    restart: always
+    ports:
+      - 3333:3306
+    environment:
+      - MYSQL_DATABASE=nodevader
+      - MYSQL_USER=nodevader
+      - MYSQL_PASSWORD=nodevader
+      - MYSQL_ROOT_PASSWORD=nodevader
+    volumes:
+      - ./docker/storage/mariadb:/var/lib/mysql
+      - ./docker/config/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+  postgres:
+    image: postgres:9.6-alpine
+    container_name: nodevader-postgres
+    environment:
+      POSTGRES_PASSWORD: nodevader
+      POSTGRES_USER: nodevader
+      POSTGRES_DB: nodevader
+    stdin_open: true
+    volumes:
+      - ./docker/storage/postgresql:/var/lib/postgresql
+    tty: true
+    ports:
+      - 5555:5432/tcp
+  flyway:
+    container_name: nodevader-flyway
+    image: boxfuse/flyway:5.2.4
+    command: -url=jdbc:mysql://mariadb/nodevader -schemas=nodevader -user=nodevader -password=nodevader -connectRetries=10 migrate
+    volumes:
+      - ./docker/migrations:/flyway/sql
+    depends_on:
+      - mariadb
+  api:
+    build: ./docker/bin/nodejs
+    image: api
+    container_name: nodevader-api
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    ports:
+      - 8888:3000
+    volumes:
+      - .:/app
+    depends_on:
+      - flyway
