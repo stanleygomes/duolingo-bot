@@ -1,19 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const sampleRest = require('../api/sample/sampleRest')
-const authRest = require('../api/auth/authRest')
-const protectedRoutesRest = require('../api/auth/protectedRoutesRest')
-const authMiddleware = require('../middlewares/authMiddleware')
+const crawlerRest = require('../api/crawler/crawlerRest')
 const i18nUtils = require('../utils/i18n')
 const loggerUtils = require('../utils/logger')
 
-/* non auth routes */
-router.use('/auth', authRest)
-router.use('/sample', sampleRest)
-
-/* auth routes */
-router.use(authMiddleware)
-router.use('/protected', protectedRoutesRest)
+router.use('/crawler', crawlerRest)
 
 router.use((req, res, next) => {
   return res
