@@ -1,3 +1,5 @@
+const translationsDatabase = require('../../data/translations.json')
+
 const crawlerParam = {
   startUrl: 'https://www.duolingo.com',
   username: process.env.DUOLINGO_USERNAME,
@@ -35,40 +37,7 @@ const crawlerParam = {
   singleTapAnswer: {
     first: 'pets'
   },
-  matchChallengeDatabase: [
-    {
-      en: 'Where',
-      br: 'onde'
-    },
-    {
-      en: 'But',
-      br: 'mas'
-    },
-    {
-      en: 'Yes',
-      br: 'sim'
-    },
-    {
-      en: 'you',
-      br: 'você'
-    },
-    {
-      en: 'is',
-      br: 'é'
-    },
-    {
-      en: 'No',
-      br: 'não'
-    },
-    {
-      en: 'want',
-      br: 'quer'
-    },
-    {
-      en: 'salad',
-      br: 'salada'
-    }
-  ]
+  matchChallengeDatabase: translationsDatabase
 }
 
 module.exports = crawlerParam

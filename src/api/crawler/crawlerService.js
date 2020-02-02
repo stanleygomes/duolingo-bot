@@ -4,11 +4,16 @@ const crawlerParams = require('./crawlerParamService')
 
 const execute = (req, res) => {
   return new Promise((resolve, reject) => {
-    const step1 = login(nightmare)
-    const step2 = openStory(step1)
-    const step3 = playStory(step2)
+    const stepLogin = login(nightmare)
+    let stepOpenStory = null
+    let stepPlayStory = null
 
-    step3
+    for (let i = 0; i < 2; i++) {
+      stepOpenStory = openStory(stepLogin)
+      stepPlayStory = playStory(stepOpenStory)
+    }
+
+    stepPlayStory
       .end()
       .then((res) => {
         console.log('Execução finalizada com sucesso!')
@@ -29,15 +34,14 @@ const login = (nightmareStack) => {
     .type(crawlerParams.elements.inputUsername, crawlerParams.username)
     .type(crawlerParams.elements.inputPassword, crawlerParams.password)
     .click(crawlerParams.elements.buttonLogin)
+    .wait(crawlerParams.elements.storiesHeader)
+    .click(crawlerParams.elements.storiesHeader)
 }
 
 const openStory = (nightmareStack) => {
   return nightmareStack
-    .wait(crawlerParams.elements.storiesHeader)
-    .click(crawlerParams.elements.storiesHeader)
     .wait(crawlerParams.elements.selectedStory)
     .click(crawlerParams.elements.selectedStory)
-    .wait(crawlerParams.elements.buttonStartStory)
     .wait(crawlerParams.elements.buttonStartStory)
     .click(crawlerParams.elements.buttonStartStory)
 }
