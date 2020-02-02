@@ -1,34 +1,37 @@
 const Nightmare = require('nightmare')
-const nightmare = Nightmare({ show: true })
 const crawlerParams = require('./crawlerParamService')
 
-const execute = (req, res) => {
+const execute = () => {
   return new Promise((resolve, reject) => {
-    const stepLogin = login(nightmare)
-    let stepOpenStory = null
-    let stepPlayStory = null
+    const nightmare = Nightmare({ show: true })
 
-    for (let i = 0; i < 2; i++) {
-      stepOpenStory = openStory(stepLogin)
-      stepPlayStory = playStory(stepOpenStory)
+    let steps = login(nightmare)
+    steps = openStory(steps)
+    steps = playStory(steps)
+
+    try {
+      steps
+        .end()
+        .then((result) => {
+          const message = 'Execução finalizada com sucesso!'
+          console.log(message)
+          resolve(message)
+        })
+        .catch(error => {
+          console.error('Search failed:', error)
+          reject(error)
+        })
+    } catch (error) {
+      console.error('Search failed:', error)
+      reject(error)
     }
-
-    stepPlayStory
-      .end()
-      .then((res) => {
-        console.log('Execução finalizada com sucesso!')
-        resolve(res)
-      })
-      .catch(error => {
-        console.error('Search failed:', error)
-        reject(error)
-      })
   })
 }
 
 const login = (nightmareStack) => {
   return nightmareStack
     .goto(crawlerParams.startUrl)
+    .wait(crawlerParams.elements.buttonGoToLogin)
     .click(crawlerParams.elements.buttonGoToLogin)
     .wait(crawlerParams.elements.inputUsername)
     .type(crawlerParams.elements.inputUsername, crawlerParams.username)
@@ -40,8 +43,9 @@ const login = (nightmareStack) => {
 
 const openStory = (nightmareStack) => {
   return nightmareStack
-    .wait(crawlerParams.elements.selectedStory)
-    .click(crawlerParams.elements.selectedStory)
+    .goto('https://stories.duolingo.com/lessons/en-pt-a-date')
+    // .wait(crawlerParams.elements.selectedStory)
+    // .click(crawlerParams.elements.selectedStory)
     .wait(crawlerParams.elements.buttonStartStory)
     .click(crawlerParams.elements.buttonStartStory)
 }
@@ -90,8 +94,6 @@ const playStory = (nightmareStack) => {
     .evaluate(matchChallenge, crawlerParams.matchChallengeDatabase, crawlerParams)
 
   nightmareStack = clickContinue(nightmareStack, 3)
-
-  nightmareStack.wait(10000)
 
   return nightmareStack
 }
