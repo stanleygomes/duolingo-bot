@@ -2,8 +2,8 @@ const express = require('express')
 const crawlerRest = express.Router()
 const crawlerService = require('./crawlerService')
 
-crawlerRest.get('/win', async (req, res) => {
-  const times = [1, 2, 3, 4, 5, 6]
+crawlerRest.get('/hora-do-show', async (req, res) => {
+  const times = [1, 2, 3, 4, 5]
 
   const executions = times.map(async (value) => {
     const result = await crawlerService.execute()
@@ -15,7 +15,6 @@ crawlerRest.get('/win', async (req, res) => {
       res.json(response)
     }
   }).catch(error => {
-    console.log('erro 1')
     res.send(error)
   })
 })
